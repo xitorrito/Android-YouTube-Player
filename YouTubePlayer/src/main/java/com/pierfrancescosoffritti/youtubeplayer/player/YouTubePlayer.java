@@ -18,6 +18,7 @@ public interface YouTubePlayer {
     void pause();
     void mute();
     void unMute();
+    boolean isPaused();
 
     /**
      * @param volumePercent Integer between 0 and 100

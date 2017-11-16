@@ -154,4 +154,18 @@ public class YouTubePlayerView extends FrameLayout implements NetworkReceiver.Ne
             }
         });
     }
+
+    public boolean isPaused(){
+        return youTubePlayer.isPaused();
+    }
+
+
+    public void hideYoutubeButton(boolean hide) {
+        playerUIControls.hideYoutubeButton(hide);
+    }
+
+    public void hideDurationVideo(boolean hide) {
+        playerUIControls.hideDurationVideo(hide);
+    }
+
 }
