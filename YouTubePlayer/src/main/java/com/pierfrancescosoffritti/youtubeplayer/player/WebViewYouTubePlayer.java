@@ -24,11 +24,15 @@ import java.util.Set;
  */
 class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
 
-    @NonNull private final Set<YouTubePlayerListener> youTubePlayerListeners;
-    @NonNull private final Handler mainThreadHandler;
+    @NonNull
+    private final Set<YouTubePlayerListener> youTubePlayerListeners;
+    @NonNull
+    private final Handler mainThreadHandler;
 
     private YouTubePlayerInitListener youTubePlayerInitListener;
-    @Nullable private PlayerStateTracker playerStateTracker;
+    @Nullable
+    private PlayerStateTracker playerStateTracker;
+    private boolean isPaused;
 
     protected WebViewYouTubePlayer(Context context) {
         this(context, null);
@@ -62,10 +66,11 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
 
     @Override
     public void loadVideo(final String videoId, final float startSeconds) {
+        isPaused = true;
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                loadUrl("javascript:loadVideo('" +videoId +"', " +startSeconds +")");
+                loadUrl("javascript:loadVideo('" + videoId + "', " + startSeconds + ")");
             }
         });
     }
@@ -75,13 +80,14 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                loadUrl("javascript:cueVideo('" +videoId +"', " +startSeconds +")");
+                loadUrl("javascript:cueVideo('" + videoId + "', " + startSeconds + ")");
             }
         });
     }
 
     @Override
     public void play() {
+        isPaused = false;
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -92,6 +98,7 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
 
     @Override
     public void pause() {
+        isPaused = true;
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -121,6 +128,11 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
     }
 
     @Override
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    @Override
     public void setVolume(final int volumePercent) {
         if (volumePercent < 0 || volumePercent > 100)
             throw new IllegalArgumentException("Volume must be between 0 and 100");
@@ -138,7 +150,7 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
         mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                loadUrl("javascript:seekTo(" +time +")");
+                loadUrl("javascript:seekTo(" + time + ")");
             }
         });
     }
@@ -146,7 +158,7 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
     @Override
     @PlayerConstants.PlayerState.State
     public int getCurrentState() {
-        if(playerStateTracker == null)
+        if (playerStateTracker == null)
             throw new RuntimeException("Player not initialized.");
 
         return playerStateTracker.currentState;
@@ -188,7 +200,7 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
             public Bitmap getDefaultVideoPoster() {
                 Bitmap result = super.getDefaultVideoPoster();
 
-                if(result == null)
+                if (result == null)
                     return Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
                 else
                     return result;
@@ -206,7 +218,7 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
             String read;
             StringBuilder sb = new StringBuilder();
 
-            while ( ( read = bufferedReader.readLine() ) != null )
+            while ((read = bufferedReader.readLine()) != null)
                 sb.append(read).append("\n");
             inputStream.close();
 
@@ -217,7 +229,8 @@ class WebViewYouTubePlayer extends WebView implements YouTubePlayer {
     }
 
     private class PlayerStateTracker extends AbstractYouTubePlayerListener {
-        @PlayerConstants.PlayerState.State private int currentState;
+        @PlayerConstants.PlayerState.State
+        private int currentState;
 
         @Override
         public void onStateChange(@PlayerConstants.PlayerState.State int state) {

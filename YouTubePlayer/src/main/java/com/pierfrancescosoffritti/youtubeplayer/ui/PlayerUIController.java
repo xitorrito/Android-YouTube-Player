@@ -20,4 +20,8 @@ public interface PlayerUIController {
 
     void showFullscreenButton(boolean show);
     void setCustomFullScreenButtonListener(@NonNull View.OnClickListener customFullScreenButtonListener);
+
+    void hideYoutubeButton(boolean hide);
+
+    void hideDurationVideo(boolean hide);
 }

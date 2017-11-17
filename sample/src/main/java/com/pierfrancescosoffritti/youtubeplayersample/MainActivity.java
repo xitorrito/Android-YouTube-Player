@@ -48,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
         fullScreenManager = new FullScreenManager(this);
 
         youTubePlayerView = findViewById(R.id.youtube_player_view);
+        youTubePlayerView.getPlayerUIController().hideDurationVideo(true);
+        youTubePlayerView.getPlayerUIController().hideYoutubeButton(true);
+        youTubePlayerView.getPlayerUIController().showUI(false);
+        youTubePlayerView.getPlayerUIController().showFullscreenButton(false);
         youTubePlayerView.initialize(initializedYouTubePlayer -> {
 
             initializedYouTubePlayer.addListener(new AbstractYouTubePlayerListener() {
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Drawable icon = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_pause_36dp);
                 youTubePlayerView.getPlayerUIController().setCustomAction1(icon, view -> {
-                    if(youTubePlayer != null) youTubePlayer.pause();
+                    if (youTubePlayer != null) youTubePlayer.pause();
                 });
             }
 
@@ -106,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
      * This method is called every time a new video is being loaded/cued.
      * It uses the YouTube Data APIs to get the video title from the video ID. You can learn more here https://developers.google.com/youtube/v3/docs/videos/list and here https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.videos.list?part=snippet&id=6JYIGclVQdw&fields=items(snippet(title))&_h=9&
      * The YouTube Data APIs are nothing more then a wrapper over the YouTube REST API.
-     *
+     * <p>
      * youTubeDataAPIEndPoint.execute() does network operations, therefore it cannot be executed on the main thread.
      * For simplicity I have used RxJava to implement the asynchronous logic. You can you whatever you want: Threads, AsyncTask ecc.
      */
@@ -119,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         videoTitle -> playerUIController.setVideoTitle(videoTitle),
-                        error -> { throw new RuntimeException(error); }
+                        error -> {
+                            throw new RuntimeException(error);
+                        }
                 );
     }
 
